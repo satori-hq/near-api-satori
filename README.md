@@ -2,10 +2,12 @@
 
 # NEAR API Helper
 
-
 Batch near-api-js RPC calls.
 
 Optionally flatten and sort arrays of objects.
+
+# Satori Fork TODOs
+- add post routes for creating accounts, deploying contracts and nfts
 
 ## 🚨 Warning this is WIP 🚨
 - Not officially supported (yet)
