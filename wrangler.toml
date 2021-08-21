@@ -1,8 +1,8 @@
-name = "api-helper"
+name = "near-api-satori"
 type = "webpack"
 
 account_id = "e933298eadc1cb3ced383f0d701f8ff8"
 workers_dev = true
-route = ""
 zone_id = "near.workers.dev"
+route = ""
 webpack_config = "webpack.config.js"

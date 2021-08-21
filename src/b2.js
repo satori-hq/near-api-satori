@@ -1,4 +1,4 @@
-const B2 = JSON.parse(ENV_B2)
+const B2 = ENV_B2 ? JSON.parse(ENV_B2) : {}
 
 export const authB2 = () => {
     return fetch('https://api.backblazeb2.com' + B2.apiPath + 'b2_authorize_account', {
