@@ -17,7 +17,7 @@ const nearTestnet = new Near({
 		keyStore: new keyStores.InMemoryKeyStore()
 	},
 });
-networks.testnet = nearTestnet
+networks.testnet = nearTestnet;
 accounts.testnet = new Account(nearTestnet.connection, 'testnet');
 
 const nearMainnet = new Near({
@@ -27,7 +27,7 @@ const nearMainnet = new Near({
 		keyStore: new keyStores.InMemoryKeyStore()
 	},
 });
-networks.mainnet = nearMainnet
+networks.mainnet = nearMainnet;
 accounts.mainnet = new Account(nearMainnet.connection, 'near');
 
 /// signature verification
@@ -46,10 +46,10 @@ const validBlock = async (blockNumber) => {
 export const verifySignature = async (networkId, data) => {
 	const near = networks[networkId];
 
-	const { accountId, blockNumber, blockNumberSignature } = data
+	const { accountId, blockNumber, blockNumberSignature } = data;
 	if (!validBlock(blockNumber)) {
-		console.error('Invalid block')
-		return false
+		console.error('Invalid block');
+		return false;
 	}
 	const account = await near.account(accountId);
 	try {
@@ -66,29 +66,29 @@ export const verifySignature = async (networkId, data) => {
 };
 
 export const isOwner = async (networkId, signature) => {
-    if (!signature.accountId) {
-        throw 'method requires signature from account';
-    }
-    if (!await verifySignature(networkId, signature)) {
-        throw 'invalid signature';
-    }
-}
+	if (!signature.accountId) {
+		throw 'method requires signature from account';
+	}
+	if (!await verifySignature(networkId, signature)) {
+		throw 'invalid signature';
+	}
+};
 
 export const nftOwner = async (networkId, signature, nft) => {
-    isOwner(networkId, signature)
+	isOwner(networkId, signature);
     
-    const { contractId, tokenId } = nft
-    if (!contractId || !tokenId) {
-        throw 'method requires near-nft header with { contractId, tokenId }';
-    }
-    const account = accounts[networkId];
-    const token = await account.viewFunction(contractId, 'nft_token', {
-        token_id: tokenId
-    })
-    if (token.owner_id !== signature.accountId) {
-        throw 'method requires signature.accountId === token.owner_id';
-    }
-}
+	const { contractId, tokenId } = nft;
+	if (!contractId || !tokenId) {
+		throw 'method requires near-nft header with { contractId, tokenId }';
+	}
+	const account = accounts[networkId];
+	const token = await account.viewFunction(contractId, 'nft_token', {
+		token_id: tokenId
+	});
+	if (token.owner_id !== signature.accountId) {
+		throw 'method requires signature.accountId === token.owner_id';
+	}
+};
 
 
 /// JS

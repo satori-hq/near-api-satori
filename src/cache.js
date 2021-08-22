@@ -10,15 +10,16 @@ export const checkCache = async ({ request, params, url, corsHeaders, cacheMaxAg
 	let { method } = request;
 
 	const cache = caches.default;
-	const body = method === 'POST' && params.type !== 'upload' && await request.clone().text();
+
+	if (cacheMaxAge === '0') {
+		return {cache, cacheKey: url.toString(), cachedResponse: false };
+	}
+
+	const body = method === 'POST' && await request.clone().text();
 	const hash = await sha256(url.toString() + body);
 	const cacheUrl = new URL(url.origin);
 	cacheUrl.pathname = '/c/' + hash;
 	const cacheKey = cacheUrl.toString();
-
-	if (cacheMaxAge === '0') {
-		return {cache, cacheKey, cachedResponse: false };
-	}
 
 	let cachedResponse = await cache.match(cacheKey);
 

@@ -1,6 +1,7 @@
 import { handleOptions, corsHeaders, jsonHeaders } from './src/cors';
 import { checkCache } from './src/cache';
 import { handleView } from './src/view';
+import { handleCall } from './src/call';
 import { handleBatch } from './src/batch'
 import { handleUpload, handleShare } from './src/upload'
 import { handleRedirect } from './src/redirect'
@@ -40,11 +41,15 @@ async function handleRequest(event) {
 	let params = getParamsObj(searchParams)
     let cacheMaxAge = headers.get('max-age') || '60'
 
+	
 	// qualify path and args
 	const pathArgs = pathToArgs(pathname)
 	Object.assign(params, pathArgs)
-
+	
 	// '0' max-age means : "skip cache"
+	if (/upload|call/.test(params.type)) {
+		cacheMaxAge = '0'
+	}
 	// if there's a cached response, serve it
 	const { cache, cachedResponse, cacheKey } = await checkCache({ request, params, url, corsHeaders, cacheMaxAge })
 	if (cachedResponse) {
@@ -53,6 +58,8 @@ async function handleRequest(event) {
 	if (cacheMaxAge === '0') {
 		cacheMaxAge = '60'
 	}
+	
+	console.log(request)
 
 	const methodArgs = {
 		event, request, url, params, userAgent, signature,
@@ -69,6 +76,7 @@ async function handleRequest(event) {
 			}
 		case 'POST': 
 			switch (params.type) {
+				case 'call': return await handleCall(methodArgs)
 				case 'batch': 
 					params.views = await request.json()
 					return await handleBatch(methodArgs)

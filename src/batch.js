@@ -15,13 +15,13 @@ export const handleBatch = async ({
 	views = views.map(({ contract, method, args, batch, sort }) => {
 		const promises = [];
 		if (batch) {
-			const ids = Object.values(args)[0]
+			const ids = Object.values(args)[0];
 			if (Array.isArray(ids)) {
 				// assume ids is an arr of the ids you want to query the method with
-				const argKey = Object.keys(args)[0]
+				const argKey = Object.keys(args)[0];
 				// assume batch obj is { from_index, limit, step, flatten }
 				const valInts = Object.values(batch).map((v) => parseInt(v));
-				valInts[1] = Math.min(valInts[1], ids.length)
+				valInts[1] = Math.min(valInts[1], ids.length);
 				for (let i = valInts[0]; i < valInts[1]; i += valInts[2]) {
 					const promise = accounts[networkId].viewFunction(contract, method, {
 						[argKey]: ids.slice(i, i + valInts[2]),

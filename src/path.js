@@ -8,6 +8,11 @@ export const pathToArgs = (pathname) => {
 
 	// console.log('\n\n\npath\n\n\n', path, '\n\n\n')
 
+	// call has POST body args
+	if (path[1] === 'v1' && (path[2] === 'call')) {
+		return { type: path[2] };
+	}
+
 	// upload or share url path
 	if (path[1] === 'v1' && (path[2] === 'upload' || path[2] === 'share')) {
 		let args = path[3];
