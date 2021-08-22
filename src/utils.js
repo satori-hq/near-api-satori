@@ -1,5 +1,5 @@
 import {
-	Near, Account, keyStores, utils
+	Near, Account, KeyPair, keyStores, utils
 } from 'near-api-js';
 const nacl = require('tweetnacl');
 const crypto = require('crypto');
@@ -8,27 +8,46 @@ const bs58 = require('bs58');
 const { format: { parseNearAmount } } = utils;
 const n2f = (amount) => parseFloat(parseNearAmount(amount, 8));
 
+export const credentials = [
+	JSON.parse(ACCOUNT_0)
+];
 export const accounts = {};
 export const networks = {};
+export const keys = {};
+/// testnet
+keys['testnet'] = new keyStores.InMemoryKeyStore()
 const nearTestnet = new Near({
 	networkId: 'testnet',
 	nodeUrl: 'https://rpc.testnet.near.org',
 	deps: {
-		keyStore: new keyStores.InMemoryKeyStore()
+		keyStore: keys['testnet']
 	},
 });
 networks.testnet = nearTestnet;
 accounts.testnet = new Account(nearTestnet.connection, 'testnet');
-
+/// mainnet
+keys['mainnet'] = new keyStores.InMemoryKeyStore()
 const nearMainnet = new Near({
 	networkId: 'mainnet',
 	nodeUrl: 'https://rpc.mainnet.near.org',
 	deps: {
-		keyStore: new keyStores.InMemoryKeyStore()
+		keyStore: keys['mainnet']
 	},
 });
 networks.mainnet = nearMainnet;
 accounts.mainnet = new Account(nearMainnet.connection, 'near');
+
+export const getNear = (networkId) => networks[networkId]
+export const getAccount = (networkId, accountId) => {
+	const near = networks[networkId]
+
+	const credential = credentials.find((c) => c.account_id === accountId)
+	if (credential) {
+		keys[networkId].setKey(networkId, accountId, KeyPair.fromString(credential.private_key));
+	}
+
+	return new Account(near.connection, accountId)
+}
 
 /// signature verification
 
@@ -44,7 +63,7 @@ const validBlock = async (blockNumber) => {
 };
 
 export const verifySignature = async (networkId, data) => {
-	const near = networks[networkId];
+	const near = getNear(networkId)
 
 	const { accountId, blockNumber, blockNumberSignature } = data;
 	if (!validBlock(blockNumber)) {
@@ -52,6 +71,7 @@ export const verifySignature = async (networkId, data) => {
 		return false;
 	}
 	const account = await near.account(accountId);
+
 	try {
 		const hash = crypto.createHash('sha256').update(blockNumber).digest();
 		let accessKeys = await account.getAccessKeys();
@@ -89,7 +109,6 @@ export const nftOwner = async (networkId, signature, nft) => {
 		throw 'method requires signature.accountId === token.owner_id';
 	}
 };
-
 
 /// JS
 export const getNestedField = (obj, field, parse) => {

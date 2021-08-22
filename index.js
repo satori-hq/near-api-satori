@@ -58,8 +58,6 @@ async function handleRequest(event) {
 	if (cacheMaxAge === '0') {
 		cacheMaxAge = '60'
 	}
-	
-	console.log(request)
 
 	const methodArgs = {
 		event, request, url, params, userAgent, signature,

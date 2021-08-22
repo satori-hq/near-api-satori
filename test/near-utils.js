@@ -1,7 +1,7 @@
 
 const nearAPI = require('near-api-js');
 const getConfig = require('./config');
-const { nodeUrl, networkId } = getConfig();
+const { nodeUrl, networkId, GAS } = getConfig();
 const {
 	keyStores: { InMemoryKeyStore },
 	Near, Account, KeyPair,
@@ -34,8 +34,11 @@ const getSignature = async (account) => {
 	return { accountId, blockNumber, blockNumberSignature };
 };
 
+// {"account_id":"dev-1622483586098-7037602","public_key":"ed25519:E3tFXaYxHMmPK1uk5EtZSnNGCKkV14d5Ee28UyjWgBZi","private_key":"ed25519:5q4cW6QLqU1t257yzipYjMT5UvECdFrpzG1sgPHEiRqNY6rnsG1dPGMPzvdeQyccjTzJ4dvJWUk8hn7NSY2qkHag"}
+
 module.exports = {
 	near,
+	GAS,
 	keyStore,
 	connection,
 	account,

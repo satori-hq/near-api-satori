@@ -6,3 +6,7 @@ workers_dev = true
 zone_id = "near.workers.dev"
 route = ""
 webpack_config = "webpack.config.js"
+
+# [secrets]
+# ENV_B2
+# ACCOUNT_0

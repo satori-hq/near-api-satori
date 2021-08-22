@@ -1,12 +1,12 @@
 const assert = require('assert');
 const fetch = require("node-fetch");
-const { account, getSignature } = require("./near-utils");
+const { account, getSignature, GAS: gas } = require("./near-utils");
 
 const contractId = 'dev-1623990723679-78605620599599';
 const tokenId = 'HipHopHead.10.143.11151512:1';
 // consts
-const domain = 'http://127.0.0.1:8787';
-// const domain = 'https://helper.nearapi.org/v1/contract/'
+let domain = 'http://127.0.0.1:8787';
+// domain = 'https://near-api-satori.near.workers.dev/'
 const domainAndPath = domain + '/v1/contract/';
 const testNFTPath = domainAndPath + contractId + '/nft_token/';
 const batchPath = domain + '/v1/batch/';
@@ -50,20 +50,24 @@ describe('NEAR API Helper', function () {
      * Working on functionCalls
      */
 	 it('should return call args', async function() {
-		const { contractId, tokenId } = account;
+		const { contractId } = account;
+		const signature = await getSignature(account);
 
 		const response = await fetch(callPath, {
 			method: 'POST',
+			headers: {
+				'near-signature': JSON.stringify(signature),
+			},
 			body: JSON.stringify({
 				contractId,
-				methodName: 'test',
+				methodName: 'set_contract_royalty',
 				args: {
-					foo: 'bar'
+					contract_royalty: 1000
 				},
-				gas: '0',
-				attachedDeposit: '0'
+				gas,
+				// attachedDeposit: '0'
 			})
-		}).then((res) => res.json());
+		}).then((res) => res.text());
 
 		console.log(response)
 	});
