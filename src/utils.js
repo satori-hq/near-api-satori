@@ -38,15 +38,13 @@ networks.mainnet = nearMainnet;
 accounts.mainnet = new Account(nearMainnet.connection, 'near');
 
 export const getNear = (networkId) => networks[networkId]
-export const getAccount = (networkId, accountId) => {
-	const near = networks[networkId]
-
+export const getAccount = (networkId, accountId) => new Account(networks[networkId].connection, accountId)
+export const getAccountWithKey = (networkId, accountId) => {
 	const credential = credentials.find((c) => c.account_id === accountId)
 	if (credential) {
 		keys[networkId].setKey(networkId, accountId, KeyPair.fromString(credential.private_key));
 	}
-
-	return new Account(near.connection, accountId)
+	return getAccount(networkId, accountId)
 }
 
 /// signature verification

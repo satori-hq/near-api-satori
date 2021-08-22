@@ -1,5 +1,5 @@
 import {
-	isOwner, getAccount,
+	isOwner, getAccountWithKey,
 } from './utils';
 
 export const handleCall = async ({
@@ -15,7 +15,7 @@ export const handleCall = async ({
 	}
 
 	const { accountId } = signature
-	const account = getAccount(networkId, accountId)
+	const account = getAccountWithKey(networkId, accountId)
 
 	const response = await account.functionCall(await request.json())
 
