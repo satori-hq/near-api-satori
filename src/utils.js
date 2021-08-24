@@ -1,11 +1,13 @@
-import {
-	Near, Account, KeyPair, keyStores, utils
-} from 'near-api-js';
+import * as nearAPI from 'near-api-js';
 const nacl = require('tweetnacl');
 const crypto = require('crypto');
 const bs58 = require('bs58');
 
-const { format: { parseNearAmount } } = utils;
+export const {
+	Near, Account, KeyPair, keyStores, transactions,
+	utils: { format: { parseNearAmount } }, 
+} = nearAPI
+
 const n2f = (amount) => parseFloat(parseNearAmount(amount, 8));
 
 export const credentials = [
@@ -14,6 +16,10 @@ export const credentials = [
 export const accounts = {};
 export const networks = {};
 export const keys = {};
+export const explorerUrls = {
+	testnet: 'https://explorer.testnet.near.org/',
+	mainnet: 'https://explorer.near.org/'
+};
 /// testnet
 keys['testnet'] = new keyStores.InMemoryKeyStore()
 const nearTestnet = new Near({
@@ -41,9 +47,17 @@ export const getNear = (networkId) => networks[networkId]
 export const getAccount = (networkId, accountId) => new Account(networks[networkId].connection, accountId)
 export const getAccountWithKey = (networkId, accountId) => {
 	const credential = credentials.find((c) => c.account_id === accountId)
-	if (credential) {
-		keys[networkId].setKey(networkId, accountId, KeyPair.fromString(credential.private_key));
+	if (!credential) {
+		throw 'no credentials found for ' + accountId
 	}
+	keys[networkId].setKey(networkId, accountId, KeyPair.fromString(credential.private_key));
+	return getAccount(networkId, accountId)
+}
+export const getAccountWithSecret = (networkId, accountId, secretKey) => {
+	if (!secretKey) {
+		throw 'no credentials received for ' + accountId
+	}
+	keys[networkId].setKey(networkId, accountId, KeyPair.fromString(secretKey));
 	return getAccount(networkId, accountId)
 }
 

@@ -1,7 +1,8 @@
 
 const nearAPI = require('near-api-js');
 const getConfig = require('./config');
-const { nodeUrl, networkId, GAS } = getConfig();
+const { nodeUrl, networkId, GAS } = getConfig('testnet');
+
 const {
 	keyStores: { InMemoryKeyStore },
 	Near, Account, KeyPair,
@@ -39,6 +40,7 @@ const getSignature = async (account) => {
 module.exports = {
 	near,
 	GAS,
+	networkId, 
 	keyStore,
 	connection,
 	account,

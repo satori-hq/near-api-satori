@@ -1,12 +1,12 @@
-module.exports = function getConfig() {
+module.exports = function getConfig(networkId) {
 	let config = {
-		networkId: 'testnet',
+		networkId,
 		nodeUrl: 'https://rpc.testnet.near.org',
 		walletUrl: 'https://wallet.testnet.near.org',
 		helperUrl: 'https://helper.testnet.near.org',
 	};
     
-	if (process.env.REACT_APP_ENV !== undefined) {
+	if (networkId !== undefined) {
 		config = {
 			...config,
 			GAS: '200000000000000',
@@ -18,7 +18,7 @@ module.exports = function getConfig() {
 		};
 	}
     
-	if (process.env.REACT_APP_ENV === 'prod') {
+	if (networkId === 'prod') {
 		config = {
 			...config,
 			networkId: 'mainnet',
